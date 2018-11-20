@@ -2760,7 +2760,7 @@ defaultDataSets['2018']='CMSSW_10_3_0_pre5-103X_upgrade2018_realistic_v7-v'
 defaultDataSets['2018Design']='CMSSW_10_3_0_pre5-103X_upgrade2018_design_v4-v'
 #defaultDataSets['2019']=''
 #defaultDataSets['2019Design']=''
-defaultDataSets['2023D17']='CMSSW_10_2_0_pre2-101X_upgrade2023_realistic_v5_2023D17noPU-v'
+defaultDataSets['2023D17']='CMSSW_10_4_0_pre2-103X_upgrade2023_realistic_v2_2023D35noPU-v'
 defaultDataSets['2023D19']=''
 defaultDataSets['2023D21']=''
 defaultDataSets['2023D22']=''
@@ -2775,7 +2775,7 @@ defaultDataSets['2023D30']=''
 defaultDataSets['2023D31']=''
 defaultDataSets['2023D33']=''
 defaultDataSets['2023D34']=''
-defaultDataSets['2023D35']=''
+defaultDataSets['2023D35']='CMSSW_10_4_0_pre2-103X_upgrade2023_realistic_v2_2023D35noPU-v'
 
 keys=defaultDataSets.keys()
 for key in keys:
@@ -2795,7 +2795,8 @@ for gen in upgradeFragments:
 
 PUDataSets={}
 for ds in defaultDataSets:
-    key='MinBias_14TeV_pythia8_TuneCUETP8M1'+'_'+ds
+    #key='MinBias_14TeV_pythia8_TuneCUETP8M1'+'_'+ds
+    key='MinBias_14TeV_pythia8_TuneCP5'+'_'+ds   # Edited by Siddhesh
     name=baseDataSetReleaseBetter[key]
 #    if '2017' in name or '2018' in name:
     if '2017' in name:
@@ -2804,6 +2805,7 @@ for ds in defaultDataSets:
     	PUDataSets[ds]={'-n':10,'--pileup':'AVE_50_BX_25ns','--pileup_input':'das:/RelValMinBias_13/%s/GEN-SIM'%(name,)}
     else:
         PUDataSets[ds]={'-n':10,'--pileup':'AVE_35_BX_25ns','--pileup_input':'das:/RelValMinBias_14TeV/%s/GEN-SIM'%(name,)}
+        #PUDataSets[ds]={'-n':10,'--pileup':'AVE_200_BX_25ns','--pileup_input':'das:/RelValMinBias_14TeV/%s/GEN-SIM'%(name,)}
 
     #PUDataSets[ds]={'-n':10,'--pileup':'AVE_50_BX_25ns','--pileup_input':'das:/RelValMinBias_13/%s/GEN-SIM'%(name,)}
     #PUDataSets[ds]={'-n':10,'--pileup':'AVE_70_BX_25ns','--pileup_input':'das:/RelValMinBias_13/%s/GEN-SIM'%(name,)}

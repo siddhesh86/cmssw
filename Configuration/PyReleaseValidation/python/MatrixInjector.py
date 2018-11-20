@@ -110,8 +110,10 @@ class MatrixInjector(object):
             "nowmTasklist" : [],  #a list of tasks as we put them in
             "Multicore" : 1,   # do not set multicore for the whole chain
             "Memory" : 3000,
-            "SizePerEvent" : 1234,
-            "TimePerEvent" : 10,
+            "SizePerEvent" : 8000,
+            "TimePerEvent" : 20,
+            #"SizePerEvent" : 120000,
+            #"TimePerEvent" : 210,            
             "PrepID": os.getenv('CMSSW_VERSION')
             }
 
@@ -254,7 +256,11 @@ class MatrixInjector(object):
             wmsplit['HYBRIDRepackHI2015VR']=1
             wmsplit['HYBRIDZSHI2015']=1
             wmsplit['RECOHID15']=1
-                                    
+            wmsplit['DigiFullTriggerPU_2023D21PU'] = 1
+            wmsplit['RecoFullGlobalPU_2023D21PU']=1
+            wmsplit['DigiFullTriggerPU_2023D35PU'] = 1
+            wmsplit['RecoFullGlobalPU_2023D35PU']=1
+                                     
             #import pprint
             #pprint.pprint(wmsplit)            
         except:
