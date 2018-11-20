@@ -1,4 +1,4 @@
-import FWCore.ParameterSet.Config as cms
+import FWCore.ParameterSet.Config as cms 
 generator = cms.EDFilter("Pythia8PtGun",
                          PGunParameters = cms.PSet(
         MaxPt = cms.double(10.0),
