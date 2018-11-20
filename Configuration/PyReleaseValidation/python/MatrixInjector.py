@@ -110,10 +110,10 @@ class MatrixInjector(object):
             "nowmTasklist" : [],  #a list of tasks as we put them in
             "Multicore" : 1,   # do not set multicore for the whole chain
             "Memory" : 3000,
-            "SizePerEvent" : 8000,
-            "TimePerEvent" : 20,
-            #"SizePerEvent" : 120000,
-            #"TimePerEvent" : 210,            
+            #"SizePerEvent" : 8000,
+            #"TimePerEvent" : 20,
+            "SizePerEvent" : 120000,
+            "TimePerEvent" : 210,            
             "PrepID": os.getenv('CMSSW_VERSION')
             }
 
