@@ -2879,7 +2879,7 @@ for year,k in [(year,k) for year in upgradeKeys for k in upgradeKeys[year]]:
                                       '--datatier':'GEN-SIM-DIGI-RAW',
                                       '-n':'10',
                                       '--eventcontent':'FEVTDEBUGHLT',
-				      '--customise_commands' : '\'if hasattr(process,"mix"):; process.mix.mixObjects.mixCH.input += [cms.InputTag("g4SimHits","HGCHitsHEback")]; process.mix.mixObjects.mixCH.subdets += ["HGCHitsHEback"]\' ',
+				      '--customise_commands' : '\'if hasattr(process,"mix"): process.mix.mixObjects.mixCH.input += [cms.InputTag("g4SimHits","HGCHitsHEback")]; process.mix.mixObjects.mixCH.subdets += ["HGCHitsHEback"]\' ',
                                       '--geometry' : geom
                                       }
 
