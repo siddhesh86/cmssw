@@ -2452,7 +2452,7 @@ defaultDataSets['2018']='CMSSW_10_2_0_pre2-101X_upgrade2018_realistic_v7-v'
 defaultDataSets['2018Design']='CMSSW_10_2_0_pre2-101X_upgrade2018_design_v8-v'
 #defaultDataSets['2019']=''
 #defaultDataSets['2019Design']=''
-defaultDataSets['2023D17']='CMSSW_10_2_0_pre2-101X_upgrade2023_realistic_v5_2023D17noPU-v'
+defaultDataSets['2023D17']='CMSSW_10_2_0_pre5-102X_upgrade2023_realistic_v1_2023D17noPU-v'
 defaultDataSets['2023D19']=''
 defaultDataSets['2023D21']=''
 defaultDataSets['2023D22']=''
@@ -2545,7 +2545,8 @@ for year,k in [(year,k) for year in upgradeKeys for k in upgradeKeys[year]]:
                                        '--beamspot' : 'HLLHC14TeV',
                                        '--datatier' : 'GEN-SIM',
                                        '--eventcontent': 'FEVTDEBUG',
-                                       '--geometry' : geom
+                                       '--geometry' : geom,
+                                       '--customise_commands' : '--dump_python'            
                                        }
 
     upgradeStepDict['DigiFull'][k] = {'-s':'DIGI:pdigi_valid,L1,DIGI2RAW,HLT:%s'%(hltversion),
