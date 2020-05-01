@@ -66,9 +66,17 @@ HcaluLUTTPGCoder::HcaluLUTTPGCoder()
       linearLSB_QIE11_{},
       linearLSB_QIE11Overlap_{} {}
 
-HcaluLUTTPGCoder::HcaluLUTTPGCoder(const HcalTopology* top, const HcalTimeSlew* delay) { init(top, delay); }
+// Special Instructions when Using a 1TS Scheme: https://twiki.cern.ch/twiki/bin/viewauth/CMS/HcalPileupMitigation
+HcaluLUTTPGCoder::HcaluLUTTPGCoder(const HcalTopology* top, const HcalTimeSlew* delay,
+				   const int numberOfSamplesQIE11, const int numberOfPresamplesQIE11) {
+  init(top, delay, numberOfSamplesQIE11, numberOfPresamplesQIE11);
+}
+// HcaluLUTTPGCoder::HcaluLUTTPGCoder(const HcalTopology* top, const HcalTimeSlew* delay) { init(top, delay); }
 
-void HcaluLUTTPGCoder::init(const HcalTopology* top, const HcalTimeSlew* delay) {
+// Special Instructions when Using a 1TS Scheme: https://twiki.cern.ch/twiki/bin/viewauth/CMS/HcalPileupMitigation
+void HcaluLUTTPGCoder::init(const HcalTopology* top, const HcalTimeSlew* delay,
+			    const int numberOfSamplesQIE11, const int numberOfPresamplesQIE11) {
+// void HcaluLUTTPGCoder::init(const HcalTopology* top, const HcalTimeSlew* delay) {
   topo_ = top;
   delay_ = delay;
   LUTGenerationMode_ = true;
@@ -99,6 +107,10 @@ void HcaluLUTTPGCoder::init(const HcalTopology* top, const HcalTimeSlew* delay) 
   gain_ = std::vector<float>(nluts, 0.);
   ped_ = std::vector<float>(nluts, 0.);
   make_cosh_ieta_map();
+  numberOfSamplesQIE11_ = numberOfSamplesQIE11;
+  numberOfPresamplesQIE11_ = numberOfPresamplesQIE11;
+  std::cout << "\nInside HcaluLUTTPGCoder.cc, initialized with numberOfSamplesQIE11_ = " << numberOfSamplesQIE11_
+	    << " and numberOfPresamplesQIE11_ = " << numberOfPresamplesQIE11_ << "\n" << std::endl;
 }
 
 void HcaluLUTTPGCoder::compress(const IntegerCaloSamples& ics,
@@ -415,6 +427,14 @@ void HcaluLUTTPGCoder::update(const HcalDbService& conditions) {
       int granularity = meta->getLutGranularity();
 
       double correctionPhaseNS = conditions.getHcalRecoParam(cell)->correctionPhaseNS();
+      // Special Instructions when Using a 1TS Scheme: https://twiki.cern.ch/twiki/bin/viewauth/CMS/HcalPileupMitigation
+      if (qieType == QIE11 && numberOfSamplesQIE11_ - numberOfPresamplesQIE11_ == 1)
+	correctionPhaseNS = 3.0;
+      // std::cout << "qieType = " << qieType
+      // 		<< ", numberOfSamplesQIE11_ = " << numberOfSamplesQIE11_
+      // 		<< ", numberOfPresamplesQIE11_ = " << numberOfPresamplesQIE11_
+      // 		<< ", correctionPhaseNS = " << correctionPhaseNS << std::endl;
+
       for (unsigned int adc = 0; adc < SIZE; ++adc) {
         if (isMasked)
           lut[adc] = 0;
@@ -431,6 +451,15 @@ void HcaluLUTTPGCoder::update(const HcalDbService& conditions) {
             double correctedCharge = containmentCorrection1TS * adc2fC(adc);
             containmentCorrection2TSCorrected = pulseCorr_->correction(cell, 2, correctionPhaseNS, correctedCharge);
             if (qieType == QIE11) {
+	      // Special Instructions when Using a 1TS Scheme: https://twiki.cern.ch/twiki/bin/viewauth/CMS/HcalPileupMitigation
+	      if (numberOfSamplesQIE11_ - numberOfPresamplesQIE11_ == 1)
+		containmentCorrection2TSCorrected = containmentCorrection1TS;
+	      // std::cout << "qieType = " << qieType
+	      // 		<< ", numberOfSamplesQIE11_ = " << numberOfSamplesQIE11_
+	      // 		<< ", numberOfPresamplesQIE11_ = " << numberOfPresamplesQIE11_
+	      // 		<< ", containmentCorrection1TS = " << containmentCorrection1TS
+	      // 		<< ", containmentCorrection2TSCorrected = " << containmentCorrection2TSCorrected << std::endl;
+
               const HcalSiPMParameter& siPMParameter(*conditions.getHcalSiPMParameter(cell));
               HcalSiPMnonlinearity corr(
                   conditions.getHcalSiPMCharacteristics()->getNonLinearities(siPMParameter.getType()));

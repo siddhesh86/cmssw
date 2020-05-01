@@ -20,7 +20,10 @@ HcalTPGCoderULUT = cms.ESProducer("HcalTPGCoderULUT",
     FG_HF_thresholds = cms.vuint32(17, 255),
     inputLUTs = cms.FileInPath('CalibCalorimetry/HcalTPGAlgos/data/inputLUTcoder_physics.dat'),
     FGLUTs = cms.FileInPath('CalibCalorimetry/HcalTPGAlgos/data/HBHE_FG_LUT.dat'),
-    RCalibFile = cms.FileInPath('CalibCalorimetry/HcalTPGAlgos/data/RecHit-TPG-calib.dat')
+    RCalibFile = cms.FileInPath('CalibCalorimetry/HcalTPGAlgos/data/RecHit-TPG-calib.dat'),
+    ## Special Instructions when Using a 1TS Scheme: https://twiki.cern.ch/twiki/bin/viewauth/CMS/HcalPileupMitigation
+    numberOfSamplesQIE11 = simHcalTriggerPrimitiveDigis.numberOfSamplesQIE11,
+    numberOfPresamplesQIE11 = simHcalTriggerPrimitiveDigis.numberOfPresamplesQIE11
 )
 
 HcalTrigTowerGeometryESProducer = cms.ESProducer("HcalTrigTowerGeometryESProducer")

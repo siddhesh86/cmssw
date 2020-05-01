@@ -62,6 +62,8 @@ private:
   int maskBit_;
   std::vector<uint32_t> FG_HF_thresholds_;
   edm::FileInPath fgfile_, ifilename_;
+  // Special Instructions when Using a 1TS Scheme: https://twiki.cern.ch/twiki/bin/viewauth/CMS/HcalPileupMitigation
+  int numberOfSamplesQIE11_, numberOfPresamplesQIE11_;
 };
 
 //
@@ -80,6 +82,11 @@ HcalTPGCoderULUT::HcalTPGCoderULUT(const edm::ParameterSet& iConfig) {
   read_XML_ = iConfig.getParameter<bool>("read_XML_LUTs");
   read_FGLut_ = iConfig.getParameter<bool>("read_FG_LUTs");
   fgfile_ = iConfig.getParameter<edm::FileInPath>("FGLUTs");
+  // Special Instructions when Using a 1TS Scheme: https://twiki.cern.ch/twiki/bin/viewauth/CMS/HcalPileupMitigation
+  numberOfSamplesQIE11_ = iConfig.getParameter<int>("numberOfSamplesQIE11");
+  numberOfPresamplesQIE11_ = iConfig.getParameter<int>("numberOfPresamplesQIE11");
+  std::cout << "\nInside HcalTPGCoderULUT.cc, set numberOfSamplesQIE11_ = " << numberOfSamplesQIE11_
+	    << " and numberOfPresamplesQIE11_ = " << numberOfPresamplesQIE11_ << "\n" << std::endl;
 
   //the following line is needed to tell the framework what
   // data is being produced
@@ -103,7 +110,9 @@ HcalTPGCoderULUT::HcalTPGCoderULUT(const edm::ParameterSet& iConfig) {
 
 void HcalTPGCoderULUT::buildCoder(const HcalTopology* topo, const HcalTimeSlew* delay, HcaluLUTTPGCoder* theCoder) {
   using namespace edm::es;
-  theCoder->init(topo, delay);
+  // Special Instructions when Using a 1TS Scheme: https://twiki.cern.ch/twiki/bin/viewauth/CMS/HcalPileupMitigation
+  theCoder->init(topo, delay, numberOfSamplesQIE11_, numberOfPresamplesQIE11_);
+  // theCoder->init(topo, delay);
   if (read_Ascii_ || read_XML_) {
     edm::LogInfo("HCAL") << "Using ASCII/XML LUTs" << ifilename_.fullPath() << " for HcalTPGCoderULUT initialization";
     if (read_Ascii_) {

@@ -34,10 +34,14 @@ public:
   static const float lsb_;
 
   HcaluLUTTPGCoder();
-  HcaluLUTTPGCoder(const HcalTopology* topo, const HcalTimeSlew* delay);
+  // Special Instructions when Using a 1TS Scheme: https://twiki.cern.ch/twiki/bin/viewauth/CMS/HcalPileupMitigation
+  HcaluLUTTPGCoder(const HcalTopology* topo, const HcalTimeSlew* delay, const int numberOfSamplesQIE11, const int numberOfPresamplesQIE11);
+  // HcaluLUTTPGCoder(const HcalTopology* topo, const HcalTimeSlew* delay);
   ~HcaluLUTTPGCoder() override;
 
-  void init(const HcalTopology* top, const HcalTimeSlew* delay);
+  // Special Instructions when Using a 1TS Scheme: https://twiki.cern.ch/twiki/bin/viewauth/CMS/HcalPileupMitigation
+  void init(const HcalTopology* top, const HcalTimeSlew* delay, const int numberOfSamplesQIE11, const int numberOfPresamplesQIE11);
+  // void init(const HcalTopology* top, const HcalTimeSlew* delay);
 
   void adc2Linear(const HBHEDataFrame& df, IntegerCaloSamples& ics) const override;
   void adc2Linear(const HFDataFrame& df, IntegerCaloSamples& ics) const override;
@@ -110,6 +114,8 @@ private:
   double cosh_ieta_28_HE_low_depths_, cosh_ieta_28_HE_high_depths_, cosh_ieta_29_HE_;
   bool allLinear_;
   double linearLSB_QIE8_, linearLSB_QIE11_, linearLSB_QIE11Overlap_;
+  // Special Instructions when Using a 1TS Scheme: https://twiki.cern.ch/twiki/bin/viewauth/CMS/HcalPileupMitigation
+  int numberOfSamplesQIE11_, numberOfPresamplesQIE11_;
   std::unique_ptr<HcalPulseContainmentManager> pulseCorr_;
 };
 
