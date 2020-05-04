@@ -2,9 +2,11 @@
 # using: 
 # Revision: 1.19 
 # Source: /local/reps/CMSSW/CMSSW/Configuration/Applications/python/ConfigBuilder.py,v 
-# with command line options: l1Ntuple -s RAW2DIGI --python_filename=HCAL_OOT_PUS_data.py -n 100 --no_output --era=Run2_2018 --data --conditions=110X_dataRun2_v12 --customise=L1Trigger/Configuration/customiseReEmul.L1TReEmulFromRAWsimHcalTP --customise=L1Trigger/L1TNtuples/customiseL1Ntuple.L1NtupleAODRAWEMU --customise=L1Trigger/Configuration/customiseSettings.L1TSettingsToCaloParams_2018_v1_3
+# with command line options: l1Ntuple -s RAW2DIGI --python_filename=data.py -n 10 --no_output --era=Run2_2018 --data --conditions=110X_dataRun2_v12 --customise=L1Trigger/Configuration/customiseReEmul.L1TReEmulFromRAWsimHcalTP --customise=L1Trigger/L1TNtuples/customiseL1Ntuple.L1NtupleAODRAWEMUCalo --customise=L1Trigger/Configuration/customiseSettings.L1TSettingsToCaloParams_2018_v1_3 --filein=file:/eos/cms/store/data/Run2018D/SingleMuon/RAW-RECO/ZMu-PromptReco-v2/000/321/457/00000/60D23B7B-C7A5-E811-B14B-FA163EF4F4A1.root
 
 import sys
+import subprocess
+
 import FWCore.ParameterSet.Config as cms
 
 from Configuration.Eras.Era_Run2_2018_cff import Run2_2018
@@ -17,6 +19,8 @@ args = VP.VarParsing('analysis')
 
 args.register('maxEvt',  100,  VP.VarParsing.multiplicity.singleton, VP.VarParsing.varType.int,   'Number of events to process (-1 for all)')
 args.register('prtEvt',   10,  VP.VarParsing.multiplicity.singleton, VP.VarParsing.varType.int,   'Print out every Nth event')
+args.register('nVtxMin',   0,  VP.VarParsing.multiplicity.singleton, VP.VarParsing.varType.int,   'Minimum # of reconstructed vertices (pileup)')
+args.register('nVtxMax', 999,  VP.VarParsing.multiplicity.singleton, VP.VarParsing.varType.int,   'Maximum # of reconstructed vertices (pileup)')
 args.register('samples',   2,  VP.VarParsing.multiplicity.singleton, VP.VarParsing.varType.int,   'Number of samples in TP pulse')
 args.register('presamps',  0,  VP.VarParsing.multiplicity.singleton, VP.VarParsing.varType.int,   'Number of pre-samples to subtract')
 args.register('wgtHB',  [1.0, 1.0], VP.VarParsing.multiplicity.list, VP.VarParsing.varType.float, 'HCAL barrel TP sample weights')
@@ -56,27 +60,30 @@ process.MessageLogger.cerr.FwkReport.reportEvery = args.prtEvt
 
 print '\nProcessing up to %d events, will report once per %d' % (args.maxEvt, args.prtEvt)
 
+## Create a list of all ROOT files in sub-sub-sub-directories of in_dir
+readFiles   = cms.untracked.vstring()
+in_dir_name = '/eos/cms/store/data/Run2018D/SingleMuon/RAW-RECO/ZMu-PromptReco-v2/000/'
+print '\nLooking for input ROOT files in %s' % in_dir_name
+for sub_dir1 in subprocess.check_output(['ls', in_dir_name]).splitlines():
+    for sub_dir2 in subprocess.check_output(['ls', in_dir_name+sub_dir1+'/']).splitlines():
+        for in_file_name in subprocess.check_output(['ls', in_dir_name+sub_dir1+'/'+sub_dir2+'/00000/']).splitlines():
+            if not ('.root' in in_file_name): continue
+            # print in_file_name
+            readFiles.extend( cms.untracked.vstring('file:%s%s/%s/00000/%s' % (in_dir_name, sub_dir1, sub_dir2, in_file_name)) )
+print 'Found %d input ROOT files, first one is:' % len(readFiles)
+print readFiles[0]
 
 # Input source
 process.source = cms.Source("PoolSource",
-    fileNames = cms.untracked.vstring(
-        'file:/eos/cms/store/data/Run2018D/SingleMuon/RAW-RECO/ZMu-PromptReco-v2/000/321/457/00000/0C03F56B-BEA5-E811-AE45-FA163E96C3EF.root',
-        'file:/eos/cms/store/data/Run2018D/SingleMuon/RAW-RECO/ZMu-PromptReco-v2/000/321/457/00000/0CF5EF0C-D1A5-E811-ADD7-FA163ED7B2EC.root',
-        'file:/eos/cms/store/data/Run2018D/SingleMuon/RAW-RECO/ZMu-PromptReco-v2/000/321/457/00000/1EED6C56-BFA5-E811-A076-FA163E7D67F9.root',
-        'file:/eos/cms/store/data/Run2018D/SingleMuon/RAW-RECO/ZMu-PromptReco-v2/000/321/457/00000/446F21CD-E6A5-E811-A980-FA163EEA4F9F.root',
-        'file:/eos/cms/store/data/Run2018D/SingleMuon/RAW-RECO/ZMu-PromptReco-v2/000/321/457/00000/4ECA77CB-D2A5-E811-8183-02163E012D8E.root',
-        'file:/eos/cms/store/data/Run2018D/SingleMuon/RAW-RECO/ZMu-PromptReco-v2/000/321/457/00000/507FDA3B-C1A5-E811-8C49-FA163E071950.root',
-        'file:/eos/cms/store/data/Run2018D/SingleMuon/RAW-RECO/ZMu-PromptReco-v2/000/321/457/00000/60D23B7B-C7A5-E811-B14B-FA163EF4F4A1.root',
-        'file:/eos/cms/store/data/Run2018D/SingleMuon/RAW-RECO/ZMu-PromptReco-v2/000/321/457/00000/72A5272C-BEA5-E811-B16C-FA163E35CC86.root',
-        'file:/eos/cms/store/data/Run2018D/SingleMuon/RAW-RECO/ZMu-PromptReco-v2/000/321/457/00000/92A87B6C-C0A5-E811-B99D-02163E010F5C.root',
-        'file:/eos/cms/store/data/Run2018D/SingleMuon/RAW-RECO/ZMu-PromptReco-v2/000/321/457/00000/9E6AD29E-BEA5-E811-BD40-FA163E73968C.root',
-        'file:/eos/cms/store/data/Run2018D/SingleMuon/RAW-RECO/ZMu-PromptReco-v2/000/321/457/00000/BEBEAF84-BEA5-E811-9E57-02163E01A076.root',
-        'file:/eos/cms/store/data/Run2018D/SingleMuon/RAW-RECO/ZMu-PromptReco-v2/000/321/457/00000/DABB5524-BFA5-E811-9A27-FA163E5E460D.root',
-        'file:/eos/cms/store/data/Run2018D/SingleMuon/RAW-RECO/ZMu-PromptReco-v2/000/321/457/00000/E873F832-CFA5-E811-9D00-FA163EFDD21B.root',
-        'file:/eos/cms/store/data/Run2018D/SingleMuon/RAW-RECO/ZMu-PromptReco-v2/000/321/457/00000/EC0F3940-C3A5-E811-9736-02163E01A00E.root'
-    ),
+    # fileNames = cms.untracked.vstring(
+    #     'file:/eos/cms/store/data/Run2018D/SingleMuon/RAW-RECO/ZMu-PromptReco-v2/000/321/457/00000/0C03F56B-BEA5-E811-AE45-FA163E96C3EF.root',
+    #     'file:/eos/cms/store/data/Run2018D/SingleMuon/RAW-RECO/ZMu-PromptReco-v2/000/321/457/00000/0CF5EF0C-D1A5-E811-ADD7-FA163ED7B2EC.root'
+    # ),
+    fileNames = readFiles,
     secondaryFileNames = cms.untracked.vstring()
 )
+
+
 
 ## HCAL OOT PU subtraction
 process.load("SimCalorimetry.HcalTrigPrimProducers.hcaltpdigi_cff")
@@ -167,7 +174,33 @@ from L1Trigger.Configuration.customiseSettings import L1TSettingsToCaloParams_20
 #call to customisation function L1TSettingsToCaloParams_2018_v1_3 imported from L1Trigger.Configuration.customiseSettings
 process = L1TSettingsToCaloParams_2018_v1_3(process)
 
+# Add filter on number of reconstructed vertices (pileup)
+process.goodVertex = cms.EDFilter("VertexSelector",
+    src = cms.InputTag("offlinePrimaryVertices"),
+    cut = cms.string("isValid & !isFake"),
+    filter = cms.bool(True)
+)
+process.countVertices = cms.EDFilter("VertexCountFilter",
+    src = cms.InputTag("goodVertex"),
+    minNumber = cms.uint32(args.nVtxMin),
+    maxNumber = cms.uint32(args.nVtxMax)
+)
+process.nGoodVerticesFilterSequence = cms.Sequence(process.goodVertex*process.countVertices)
+
+## Add primary vertex filter to *EVERY* path in schedule
+## Imitating PrefireVetoFilter in L1TNtuples/python/customiseL1Ntuple.py
+for path in process.schedule:
+    if str(path) == str(process.endjob_step): continue  ## Don't add filter to endjob_step
+    path.insert(0,process.nGoodVerticesFilterSequence)
+
 # End of customisation functions
+
+print("\n# Final L1TReEmul sequence:  ")
+print("# {0}".format(process.L1TReEmul))
+print("# {0}".format(process.schedule))
+# for path in process.schedule:
+#     print ''
+#     print("# {0}".format(path))
 
 # Customisation from command line
 
@@ -180,10 +213,13 @@ from Configuration.StandardSequences.earlyDeleteSettings_cff import customiseEar
 process = customiseEarlyDelete(process)
 # End adding early deletion
 
+
 ## Customize output ROOT file name
 out_name = 'output/L1Ntuple_HCAL_TP_OOT_PUS'
-out_name += '_%d_Samp' % args.samples
-out_name += '_%d_Presamp' % args.presamps
+if args.nVtxMin > 0:   out_name += '_nVtxMin_%d' % args.nVtxMin
+if args.nVtxMax < 999: out_name += '_nVtxMax_%d' % args.nVtxMax
+out_name += '_nSamp_%d' % args.samples
+out_name += '_nPresamp_%d' % args.presamps
 out_name += '_HB_' +(str(WGT_HB )[1:-1]).replace(', ', '_').replace('-','n').replace('.','p')
 out_name += '_HE1_'+(str(WGT_HE1)[1:-1]).replace(', ', '_').replace('-','n').replace('.','p')
 out_name += '_HE2_'+(str(WGT_HE2)[1:-1]).replace(', ','_').replace('-','n').replace('.','p')
