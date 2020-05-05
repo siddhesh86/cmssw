@@ -24,9 +24,9 @@ process.maxEvents = cms.untracked.PSet(
     input = cms.untracked.int32(10000),
     output = cms.optional.untracked.allowed(cms.int32,cms.PSet)
 )
-process.MessageLogger.cerr.FwkReport.reportEvery = 1000
+process.MessageLogger.cerr.FwkReport.reportEvery = 100
 
-print '\nProcessing up to %d events, will report once per %d\n' % (10000, 1000)
+print '\nProcessing up to %d events, will report once per %d\n' % (10000, 100)
 
 
 # Input source
@@ -49,9 +49,7 @@ process.source = cms.Source("PoolSource",
         'file:/eos/cms/store/data/Run2018D/SingleMuon/RAW-RECO/ZMu-PromptReco-v2/000/321/457/00000/EC0F3940-C3A5-E811-9736-02163E01A00E.root',
         'file:/eos/cms/store/data/Run2018D/SingleMuon/RAW-RECO/ZMu-PromptReco-v2/000/321/475/00000/367DB943-78A6-E811-B19E-FA163ECC1FE3.root',
         'file:/eos/cms/store/data/Run2018D/SingleMuon/RAW-RECO/ZMu-PromptReco-v2/000/321/475/00000/667E3922-75A6-E811-A831-FA163EA91F95.root',
-        'file:/eos/cms/store/data/Run2018D/SingleMuon/RAW-RECO/ZMu-PromptReco-v2/000/321/475/00000/B487B300-70A6-E811-BFCC-FA163E45DCF2.root',
         'file:/eos/cms/store/data/Run2018D/SingleMuon/RAW-RECO/ZMu-PromptReco-v2/000/321/475/00000/EA92DA6F-6BA6-E811-8A2B-FA163EE997B7.root',
-        'file:/eos/cms/store/data/Run2018D/SingleMuon/RAW-RECO/ZMu-PromptReco-v2/000/321/475/00000/F293B678-6EA6-E811-905E-FA163E8560D0.root',
         'file:/eos/cms/store/data/Run2018D/SingleMuon/RAW-RECO/ZMu-PromptReco-v2/000/324/201/00000/DE15789B-9E54-7F41-8C6B-E2442CB23F52.root'
     ),
     secondaryFileNames = cms.untracked.vstring()

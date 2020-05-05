@@ -67,8 +67,16 @@ print '\nLooking for input ROOT files in %s' % in_dir_name
 for sub_dir1 in subprocess.check_output(['ls', in_dir_name]).splitlines():
     for sub_dir2 in subprocess.check_output(['ls', in_dir_name+sub_dir1+'/']).splitlines():
         for in_file_name in subprocess.check_output(['ls', in_dir_name+sub_dir1+'/'+sub_dir2+'/00000/']).splitlines():
+            ## Make sure we're looking at a ROOT files
             if not ('.root' in in_file_name): continue
-            # print in_file_name
+            ## Make sure the ROOT file is not empty (> 1 MB)
+            full_file_path = '%s%s/%s/00000/%s' % (in_dir_name, sub_dir1, sub_dir2, in_file_name)
+            file_size = int(subprocess.Popen(['ls', '-l', full_file_path], stdout=subprocess.PIPE).communicate()[0].split()[4])
+            if file_size < 1000000:
+                print 'Following file is too small, at %d kB:' % (file_size / 1000)
+                print full_file_path
+                continue
+            # print full_file_path
             readFiles.extend( cms.untracked.vstring('file:%s%s/%s/00000/%s' % (in_dir_name, sub_dir1, sub_dir2, in_file_name)) )
 print 'Found %d input ROOT files, first one is:' % len(readFiles)
 print readFiles[0]
