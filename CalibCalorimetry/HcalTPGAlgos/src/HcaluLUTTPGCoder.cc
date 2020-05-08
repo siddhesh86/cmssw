@@ -414,7 +414,11 @@ void HcaluLUTTPGCoder::update(const HcalDbService& conditions) {
     if (subdet == HcalBarrel || subdet == HcalEndcap) {
       int granularity = meta->getLutGranularity();
 
-      double correctionPhaseNS = conditions.getHcalRecoParam(cell)->correctionPhaseNS();
+      //double correctionPhaseNS = conditions.getHcalRecoParam(cell)->correctionPhaseNS();
+      // If in Run3 MC ==> 3.0, otherwise if in 2018 data ==> 0.0
+      double correctionPhaseNS = 3.0;
+      if (qieType!=QIE11) conditions.getHcalRecoParam(cell)->correctionPhaseNS();
+
       for (unsigned int adc = 0; adc < SIZE; ++adc) {
         if (isMasked)
           lut[adc] = 0;
@@ -431,6 +435,8 @@ void HcaluLUTTPGCoder::update(const HcalDbService& conditions) {
             double correctedCharge = containmentCorrection1TS * adc2fC(adc);
             containmentCorrection2TSCorrected = pulseCorr_->correction(cell, 2, correctionPhaseNS, correctedCharge);
             if (qieType == QIE11) {
+	      containmentCorrection2TSCorrected = containmentCorrection1TS;
+
               const HcalSiPMParameter& siPMParameter(*conditions.getHcalSiPMParameter(cell));
               HcalSiPMnonlinearity corr(
                   conditions.getHcalSiPMCharacteristics()->getNonLinearities(siPMParameter.getType()));
