@@ -3,11 +3,28 @@
 # Revision: 1.19 
 # Source: /local/reps/CMSSW/CMSSW/Configuration/Applications/python/ConfigBuilder.py,v 
 # with command line options: l1Ntuple -s RAW2DIGI --python_filename=data.py -n 10 --no_output --era=Run2_2018 --data --conditions=110X_dataRun2_v12 --customise=L1Trigger/Configuration/customiseReEmul.L1TReEmulFromRAWsimHcalTP --customise=L1Trigger/L1TNtuples/customiseL1Ntuple.L1NtupleAODRAWEMUCalo --customise=L1Trigger/Configuration/customiseSettings.L1TSettingsToCaloParams_2018_v1_3 --filein=file:/eos/cms/store/data/Run2018D/SingleMuon/RAW-RECO/ZMu-PromptReco-v2/000/321/457/00000/60D23B7B-C7A5-E811-B14B-FA163EF4F4A1.root
+ 
+import sys
+import subprocess
+
 import FWCore.ParameterSet.Config as cms
 
 from Configuration.Eras.Era_Run2_2018_cff import Run2_2018
 
 process = cms.Process('RAW2DIGI',Run2_2018)
+
+# use command-line options
+import FWCore.ParameterSet.VarParsing as VP
+args = VP.VarParsing('analysis')
+
+args.register('maxEvt',  100,  VP.VarParsing.multiplicity.singleton, VP.VarParsing.varType.int,   'Number of events to process (-1 for all)')
+args.register('prtEvt', 1000,  VP.VarParsing.multiplicity.singleton, VP.VarParsing.varType.int,   'Print out every Nth event')
+args.register('nVtxMin',   0,  VP.VarParsing.multiplicity.singleton, VP.VarParsing.varType.int,   'Minimum # of reconstructed vertices (pileup)')
+args.register('nVtxMax', 999,  VP.VarParsing.multiplicity.singleton, VP.VarParsing.varType.int,   'Maximum # of reconstructed vertices (pileup)')
+args.parseArguments()
+
+print '\n\nProcessing test_HCAL_Original_data.py: maxEvt: %d, prtEvt: %d, nVtsMin: %d, nVtsMax: %d \n\n' % (args.maxEvt, args.prtEvt,args.nVtxMin,args.nVtxMax)
+
 
 # import of standard configurations
 process.load('Configuration.StandardSequences.Services_cff')
@@ -21,12 +38,12 @@ process.load('Configuration.StandardSequences.EndOfProcess_cff')
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(10000),
+    input = cms.untracked.int32(args.maxEvt),
     output = cms.optional.untracked.allowed(cms.int32,cms.PSet)
 )
-process.MessageLogger.cerr.FwkReport.reportEvery = 100
+process.MessageLogger.cerr.FwkReport.reportEvery = args.prtEvt
 
-print '\nProcessing up to %d events, will report once per %d\n' % (10000, 100)
+print '\nProcessing up to %d events, will report once per %d\n' % (args.maxEvt, args.prtEvt)
 
 
 # Input source
@@ -134,8 +151,8 @@ process.goodVertex = cms.EDFilter("VertexSelector",
 )
 process.countVertices = cms.EDFilter("VertexCountFilter",
     src = cms.InputTag("goodVertex"),
-    minNumber = cms.uint32(50),
-    maxNumber = cms.uint32(999)
+    minNumber = cms.uint32(args.nVtxMin),
+    maxNumber = cms.uint32(args.nVtxMax)
 )
 process.nGoodVerticesFilterSequence = cms.Sequence(process.goodVertex*process.countVertices)
 
@@ -165,9 +182,17 @@ from Configuration.StandardSequences.earlyDeleteSettings_cff import customiseEar
 process = customiseEarlyDelete(process)
 # End adding early deletion
 
-
+  
 ## Customize output ROOT file name
-out_name = 'output/L1Ntuple_HCAL_Original_nVtxMin_50_10k.root'
+#subprocess.call(['mkdir', 'output'])
+out_name = 'L1Ntuple_HCAL_Original'
+if args.nVtxMin > 0:   out_name += '_nVtxMin_%d' % args.nVtxMin
+if args.nVtxMax < 999: out_name += '_nVtxMax_%d' % args.nVtxMax
+if args.maxEvt == -1: 
+    out_name += '_all'
+else: 
+    out_name += '_%dk' % (args.maxEvt/1000)
+out_name += '.root'
 print '\nWill output root file %s' % out_name
 
 process.TFileService = cms.Service(

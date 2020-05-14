@@ -3,7 +3,7 @@
 # Revision: 1.19 
 # Source: /local/reps/CMSSW/CMSSW/Configuration/Applications/python/ConfigBuilder.py,v 
 # with command line options: l1Ntuple -s RAW2DIGI --python_filename=data.py -n 10 --no_output --era=Run2_2018 --data --conditions=110X_dataRun2_v12 --customise=L1Trigger/Configuration/customiseReEmul.L1TReEmulFromRAWsimHcalTP --customise=L1Trigger/L1TNtuples/customiseL1Ntuple.L1NtupleAODRAWEMUCalo --customise=L1Trigger/Configuration/customiseSettings.L1TSettingsToCaloParams_2018_v1_3 --filein=file:/eos/cms/store/data/Run2018D/SingleMuon/RAW-RECO/ZMu-PromptReco-v2/000/321/457/00000/60D23B7B-C7A5-E811-B14B-FA163EF4F4A1.root
-
+ 
 import sys
 import subprocess
 
@@ -18,7 +18,7 @@ import FWCore.ParameterSet.VarParsing as VP
 args = VP.VarParsing('analysis')
 
 args.register('maxEvt',  100,  VP.VarParsing.multiplicity.singleton, VP.VarParsing.varType.int,   'Number of events to process (-1 for all)')
-args.register('prtEvt',   10,  VP.VarParsing.multiplicity.singleton, VP.VarParsing.varType.int,   'Print out every Nth event')
+args.register('prtEvt', 1000,  VP.VarParsing.multiplicity.singleton, VP.VarParsing.varType.int,   'Print out every Nth event')
 args.register('nVtxMin',   0,  VP.VarParsing.multiplicity.singleton, VP.VarParsing.varType.int,   'Minimum # of reconstructed vertices (pileup)')
 args.register('nVtxMax', 999,  VP.VarParsing.multiplicity.singleton, VP.VarParsing.varType.int,   'Maximum # of reconstructed vertices (pileup)')
 args.register('samples',   2,  VP.VarParsing.multiplicity.singleton, VP.VarParsing.varType.int,   'Number of samples in TP pulse')
@@ -28,10 +28,15 @@ args.register('wgtHE1', [1.0, 1.0], VP.VarParsing.multiplicity.list, VP.VarParsi
 args.register('wgtHE2', [1.0, 1.0], VP.VarParsing.multiplicity.list, VP.VarParsing.varType.float, 'HCAL forward endcap  TP sample weights')
 args.parseArguments()
 
+print '\n\nProcessing test_HCAL_OOT_PUS_data.py: maxEvt: %d, prtEvt: %d, nVtsMin: %d, nVtsMax: %d, samples: %d, presamps: %d \n' % (args.maxEvt, args.prtEvt,args.nVtxMin,args.nVtxMax,args.samples,args.presamps)
+
 # fix bug where default wgt array is stored as a list inside a list
 WGT_HB  = args.wgtHB [0] if isinstance(args.wgtHB [0], list) else args.wgtHB
 WGT_HE1 = args.wgtHE1[0] if isinstance(args.wgtHE1[0], list) else args.wgtHE1
 WGT_HE2 = args.wgtHE2[0] if isinstance(args.wgtHE2[0], list) else args.wgtHE2
+
+print "WGT_HB: ", WGT_HB, ", WGT_HE1:  ",WGT_HE1, ", WGT_HE2: ",WGT_HE2
+
 
 # check that number of weights matches number of samples
 if len(WGT_HB) != args.samples or len(WGT_HE1) != args.samples or len(WGT_HE2) != args.samples:
@@ -223,7 +228,8 @@ process = customiseEarlyDelete(process)
 
 
 ## Customize output ROOT file name
-out_name = 'output/L1Ntuple_HCAL_TP_OOT_PUS'
+#subprocess.call(['mkdir', 'output'])
+out_name = 'L1Ntuple_HCAL_TP_OOT_PUS'
 if args.nVtxMin > 0:   out_name += '_nVtxMin_%d' % args.nVtxMin
 if args.nVtxMax < 999: out_name += '_nVtxMax_%d' % args.nVtxMax
 out_name += '_nSamp_%d' % args.samples
@@ -231,9 +237,13 @@ out_name += '_nPresamp_%d' % args.presamps
 out_name += '_HB_' +(str(WGT_HB )[1:-1]).replace(', ', '_').replace('-','n').replace('.','p')
 out_name += '_HE1_'+(str(WGT_HE1)[1:-1]).replace(', ', '_').replace('-','n').replace('.','p')
 out_name += '_HE2_'+(str(WGT_HE2)[1:-1]).replace(', ','_').replace('-','n').replace('.','p')
-out_name += '_%dk.root' % (args.maxEvt/1000)
+if args.maxEvt == -1:
+    out_name += '_all'
+else:
+    out_name += '_%dk' % (args.maxEvt/1000)
+out_name += '.root'
 print '\nWill output root file %s' % out_name
-
+ 
 process.TFileService = cms.Service(
     "TFileService",
     fileName = cms.string(out_name)
