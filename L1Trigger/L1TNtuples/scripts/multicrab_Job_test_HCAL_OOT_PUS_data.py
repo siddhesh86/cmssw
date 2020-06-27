@@ -80,33 +80,50 @@ def main():
         config = config()
 
         config.General.requestName = None
-        config.General.workArea = 'L1TNtuple_HCal_OOT_PUS'
+        #config.General.workArea = 'L1TNtuple_HCal_OOT_PUS_PFA1p'
+        #config.General.workArea = 'L1TNtuple_HCal_OOT_PUS_PFA2'
+        config.General.workArea = 'L1TNtuple_HCal_OOT_PUS_PFA1'
         config.General.transferOutputs = True
-        config.General.transferLogs = True
+        config.General.transferLogs = False
 
         config.JobType.pluginName = 'Analysis'
-        config.JobType.psetName = 'test_HCAL_OOT_PUS_data.py'
-        config.JobType.pyCfgParams = ['maxEvt=-1', 'prtEvt=10000', 'nVtxMin=50', 'samples=2', 'presamps=1', 'wgtHB=-0.51,1.0', 'wgtHE1=-0.49,1.0', 'wgtHE2=-0.45,1.0']
+        config.JobType.psetName = 'l1ntuple_maker_effi_rates.py'
+        #config.JobType.pyCfgParams = ['maxEvt=-1', 'prtEvt=10000', 'nVtxMin=50', 'samples=2', 'presamps=1', 'wgtHB=-0.51,1.0', 'wgtHE1=-0.49,1.0', 'wgtHE2=-0.45,1.0'] # PFA1p
+        #config.JobType.pyCfgParams = ['maxEvt=-1', 'prtEvt=10000', 'nVtxMin=50', 'samples=2', 'presamps=0', 'wgtHB=1.0,1.0', 'wgtHE1=1.0,1.0', 'wgtHE2=1.0,1.0'] # PFA2
+        config.JobType.pyCfgParams = ['maxEvt=-1', 'prtEvt=10000', 'nVtxMin=50', 'samples=1', 'presamps=0', 'wgtHB=1.0', 'wgtHE1=1.0', 'wgtHE2=1.0'] # PFA1 
         #config.JobType.outputFiles = ['L1Ntuple_HCAL.root']
 
         config.Data.inputDataset = None
         config.Data.inputDBS = 'global'
-        config.Data.splitting = 'Automatic' #'LumiBased' 
-        #config.Data.unitsPerJob = 10
+        config.Data.splitting = 'LumiBased' # 'Automatic' #'LumiBased' 
+        config.Data.unitsPerJob = 100
         #config.Data.totalUnits = 30
+        config.Data.lumiMask = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions18/13TeV/PromptReco/Cert_314472-325175_13TeV_PromptReco_Collisions18_JSON.txt'
         config.Data.outputDatasetTag = None
         config.Data.outLFNDirBase = '/store/user/ssawant/'
+        config.Data.useParent = True
 
         config.Site.storageSite = 'T2_IN_TIFR' # Choose your site. 
         #--------------------------------------------------------
 
         # Will submit one task for each of these input datasets.
         inputDatasets = [
-            '/SingleMuon/Run2018A-ZMu-12Nov2019_UL2018-v2/RAW-RECO',
-            '/SingleMuon/Run2018B-ZMu-12Nov2019_UL2018-v2/RAW-RECO',
-            '/SingleMuon/Run2018C-ZMu-12Nov2019_UL2018-v2/RAW-RECO',
-            '/SingleMuon/Run2018D-ZMu-12Nov2019_UL2018-v3/RAW-RECO',
-            '/SingleMuon/Run2018D-ZMu-12Nov2019_UL2018-v4/RAW-RECO',
+#            '/SingleMuon/Run2018A-ZMu-12Nov2019_UL2018-v2/RAW-RECO',
+#            '/SingleMuon/Run2018B-ZMu-12Nov2019_UL2018-v2/RAW-RECO',
+#            '/SingleMuon/Run2018C-ZMu-12Nov2019_UL2018-v2/RAW-RECO',
+#            '/SingleMuon/Run2018D-ZMu-12Nov2019_UL2018-v3/RAW-RECO',
+#            '/SingleMuon/Run2018D-ZMu-12Nov2019_UL2018-v4/RAW-RECO',
+#
+			'/ZeroBias/Run2018A-PromptReco-v1/AOD',
+			'/ZeroBias/Run2018A-PromptReco-v2/AOD',
+			'/ZeroBias/Run2018A-PromptReco-v3/AOD',
+			'/ZeroBias/Run2018B-PromptReco-v1/AOD',
+			'/ZeroBias/Run2018B-PromptReco-v2/AOD',
+			'/ZeroBias/Run2018C-PromptReco-v1/AOD',
+			'/ZeroBias/Run2018C-PromptReco-v2/AOD',
+			'/ZeroBias/Run2018C-PromptReco-v3/AOD',
+			'/ZeroBias/Run2018D-PromptReco-v1/AOD',
+			'/ZeroBias/Run2018D-PromptReco-v2/AOD',
                         ]
 
         for inDS in inputDatasets:

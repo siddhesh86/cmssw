@@ -7,5 +7,6 @@ from Configuration.Eras.Modifier_run3_GEM_cff import run3_GEM
 from Configuration.Eras.Modifier_phase2_GEM_cff import phase2_GEM
 
 run2_GEM_2017.toModify(muonGEMDigis, useDBEMap = True)
-run3_GEM.toModify(muonGEMDigis, useDBEMap = True)
+#run3_GEM.toModify(muonGEMDigis, useDBEMap = True)
+run3_GEM.toModify(muonGEMDigis, useDBEMap = False) # Edit: Siddhesh  following https://hypernews.cern.ch/HyperNews/CMS/get/recoDevelopment/1676/1.html
 phase2_GEM.toModify(muonGEMDigis, useDBEMap = False)

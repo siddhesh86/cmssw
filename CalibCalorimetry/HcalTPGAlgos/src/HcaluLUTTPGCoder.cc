@@ -428,12 +428,14 @@ void HcaluLUTTPGCoder::update(const HcalDbService& conditions) {
 
       double correctionPhaseNS = conditions.getHcalRecoParam(cell)->correctionPhaseNS();
       // Special Instructions when Using a 1TS Scheme: https://twiki.cern.ch/twiki/bin/viewauth/CMS/HcalPileupMitigation
-      if (qieType == QIE11 && numberOfSamplesQIE11_ - numberOfPresamplesQIE11_ == 1)
-	correctionPhaseNS = 3.0;
-      // std::cout << "qieType = " << qieType
-      // 		<< ", numberOfSamplesQIE11_ = " << numberOfSamplesQIE11_
-      // 		<< ", numberOfPresamplesQIE11_ = " << numberOfPresamplesQIE11_
-      // 		<< ", correctionPhaseNS = " << correctionPhaseNS << std::endl;
+      if (qieType == QIE11 && numberOfSamplesQIE11_ - numberOfPresamplesQIE11_ == 1) {
+	//correctionPhaseNS = 3.0; // for Run3 MC
+	correctionPhaseNS = 0.0; // for 2018 data
+      }
+      //std::cout << "qieType = " << qieType
+      //	<< ", numberOfSamplesQIE11_ = " << numberOfSamplesQIE11_
+      //	<< ", numberOfPresamplesQIE11_ = " << numberOfPresamplesQIE11_
+      //	<< ", correctionPhaseNS = " << correctionPhaseNS << std::endl;
 
       for (unsigned int adc = 0; adc < SIZE; ++adc) {
         if (isMasked)
@@ -454,11 +456,11 @@ void HcaluLUTTPGCoder::update(const HcalDbService& conditions) {
 	      // Special Instructions when Using a 1TS Scheme: https://twiki.cern.ch/twiki/bin/viewauth/CMS/HcalPileupMitigation
 	      if (numberOfSamplesQIE11_ - numberOfPresamplesQIE11_ == 1)
 		containmentCorrection2TSCorrected = containmentCorrection1TS;
-	      // std::cout << "qieType = " << qieType
-	      // 		<< ", numberOfSamplesQIE11_ = " << numberOfSamplesQIE11_
-	      // 		<< ", numberOfPresamplesQIE11_ = " << numberOfPresamplesQIE11_
-	      // 		<< ", containmentCorrection1TS = " << containmentCorrection1TS
-	      // 		<< ", containmentCorrection2TSCorrected = " << containmentCorrection2TSCorrected << std::endl;
+	      //std::cout << "qieType = " << qieType
+	      //	<< ", numberOfSamplesQIE11_ = " << numberOfSamplesQIE11_
+	      //	<< ", numberOfPresamplesQIE11_ = " << numberOfPresamplesQIE11_
+	      //	<< ", containmentCorrection1TS = " << containmentCorrection1TS
+	      //	<< ", containmentCorrection2TSCorrected = " << containmentCorrection2TSCorrected << std::endl;
 
               const HcalSiPMParameter& siPMParameter(*conditions.getHcalSiPMParameter(cell));
               HcalSiPMnonlinearity corr(
