@@ -113,6 +113,9 @@ L1CaloTowerTreeProducer::L1CaloTowerTreeProducer(const edm::ParameterSet& iConfi
   maxL1Tower_ = iConfig.getUntrackedParameter<unsigned int>("maxL1Tower", 5760);
   maxL1Cluster_ = iConfig.getUntrackedParameter<unsigned int>("maxL1Cluster", 5760);
 
+  std::cout << "\n\nSiddh L1CaloTowerTreeProducer::L1CaloTowerTreeProducer():: " << std::endl;
+  std::cout << "iConfig.getUntrackedParameter<edm::InputTag>(ecalToken): " << iConfig.getUntrackedParameter<edm::InputTag>("ecalToken") << std::endl;
+  std::cout << "iConfig.getUntrackedParameter<edm::InputTag>(hcalToken): " << iConfig.getUntrackedParameter<edm::InputTag>("hcalToken") << std::endl;
   // set up output
   tree_ = fs_->make<TTree>("L1CaloTowerTree", "L1CaloTowerTree");
   tree_->Branch("CaloTP", "L1Analysis::L1AnalysisCaloTPDataFormat", &caloTPData_, 32000, 3);
@@ -138,6 +141,7 @@ L1CaloTowerTreeProducer::~L1CaloTowerTreeProducer() {
 // ------------ method called to for each event  ------------
 void L1CaloTowerTreeProducer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) {
   // do calo towers
+  std::cout << "L1CaloTowerTreeProducer::analyze():: Siddh here1" << std::endl;
   caloTPData_->Reset();
 
   edm::ESHandle<CaloTPGTranscoder> decoder;

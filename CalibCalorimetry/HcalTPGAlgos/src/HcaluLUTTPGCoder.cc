@@ -429,7 +429,7 @@ void HcaluLUTTPGCoder::update(const HcalDbService& conditions) {
       double correctionPhaseNS = conditions.getHcalRecoParam(cell)->correctionPhaseNS();
       // Special Instructions when Using a 1TS Scheme: https://twiki.cern.ch/twiki/bin/viewauth/CMS/HcalPileupMitigation
       if (qieType == QIE11 && numberOfSamplesQIE11_ - numberOfPresamplesQIE11_ == 1) {
-	//correctionPhaseNS = 3.0; // for Run3 MC
+	//correctionPhaseNS = 3.0; // for Run3 MC 
 	correctionPhaseNS = 0.0; // for 2018 data
       }
       //std::cout << "qieType = " << qieType
